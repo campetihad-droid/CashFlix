@@ -27,7 +27,11 @@ function generateRandomUserId() {
   }
 
   while (true) {
-    let uid = `${Math.floor(Math.random() * 4000 + 6000)}****${Math.floor(Math.random() * 9000 + 1000)}`;
+    const first4 = Math.floor(Math.random() * 9000) + 1000;
+    const last4 = Math.floor(Math.random() * 9000) + 1000;
+
+    const uid = `${first4}****${last4}`;
+
     if (!userLastUsed[uid]) {
       userLastUsed[uid] = now;
       return uid;
