@@ -11,7 +11,7 @@ let timer = null;
 let userLastUsed = {};
 let messageCount = 0;
 
-// Generate Random User ID
+// ✅ Pehle Jaisi User ID Generate Function
 function generateRandomUserId() {
   const now = Date.now();
 
@@ -35,31 +35,45 @@ function generateRandomUserId() {
   }
 }
 
-// ✅ Build Message - BOLD FORMAT (Sab Bold)
+// ✅ Indian Time Formatter
+function getIndianTime() {
+  const now = new Date();
+  return now.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+}
+
+// ✅ Pehle Jaisa Message Format
 function buildMessage(userId, amount, runTime, trackTime) {
   return (
-`*Conversation Count 💝*
+`Test Conversation Count 💝
 
-*🎁 Offer Name - PolicyBazar*
+🎁 Offer Name - Test
 
-*User Id :* ${userId}
-*User Amount :* ₹${amount}
-*🥳 User Payment :* Success
+User Id : ${userId}
+User Amount : ₹${amount}
+🥳 User Payment : Success
 
-*Run Time -* ${runTime}
-*Track Time -* ${trackTime}
+Run Time - ${runTime}
+Track Time - ${trackTime}
 
-*Powered By - CashFlix*`
+Powered By - CashFlix`
   );
 }
 
-// Send Message Function with Markdown
+// Send Message Function
 async function sendMessageToChannel(userId, amount, runTime, trackTime) {
   try {
     await bot.sendMessage(
       CHANNEL_ID,
-      buildMessage(userId, amount, runTime, trackTime),
-      { parse_mode: "Markdown" }
+      buildMessage(userId, amount, runTime, trackTime)
     );
     messageCount++;
     console.log(`✅ ₹${amount} message sent for ${userId}`);
@@ -72,10 +86,7 @@ async function sendMessageToChannel(userId, amount, runTime, trackTime) {
 
 // 🔥 Second Message - Random Time (1-2 Minute Ke Beech)
 async function sendSecondMessage(userId, runTime) {
-  // Random time between 60 to 120 seconds (1 to 2 minutes)
-  const randomDelay = Math.floor(Math.random() * 60000) + 60000; // 60,000ms to 120,000ms
-  // Ya simple: 60 se 120 seconds
-  // const randomDelay = Math.floor(Math.random() * 60 + 60) * 1000;
+  const randomDelay = Math.floor(Math.random() * 60000) + 60000;
   
   console.log(`⏳ Second message for ${userId} will send in ${Math.round(randomDelay/1000)} seconds`);
 
@@ -83,16 +94,14 @@ async function sendSecondMessage(userId, runTime) {
     if (!running) return;
     
     try {
-      let now = new Date();
-      let trackTime = now.toLocaleString();
+      const trackTime = getIndianTime(); // ✅ Indian Time
 
       await bot.sendMessage(
         CHANNEL_ID,
-        buildMessage(userId, "5", runTime, trackTime),
-        { parse_mode: "Markdown" }
+        buildMessage(userId, "5", runTime, trackTime)
       );
       messageCount++;
-      console.log(`✅ ₹5 (Second) message sent for ${userId} after ${Math.round(randomDelay/1000)} seconds`);
+      console.log(`✅ ₹5 (Second) message sent for ${userId}`);
     } catch (error) {
       console.error(`❌ Second message error:`, error.message);
     }
@@ -110,20 +119,19 @@ async function startConversation() {
       return;
     }
 
-    console.log(`⏰ Running at ${new Date().toLocaleTimeString()}`);
+    console.log(`⏰ Running at ${getIndianTime()}`);
 
     // ===== 3 Messages with ₹0.1 =====
     for (let i = 0; i < 3; i++) {
       try {
-        let now = new Date();
-        let userId = generateRandomUserId();
-        let runTime = new Date(now.getTime() - 60000).toLocaleString();
-        let trackTime = now.toLocaleString();
+        let userId = generateRandomUserId(); // ✅ Pehle jaisa format
+        let runTime = getIndianTime(); // ✅ Indian Time
+        let trackTime = getIndianTime(); // ✅ Indian Time
 
         // Send 0.1 message
         await sendMessageToChannel(userId, "0.1", runTime, trackTime);
         
-        // 🔥 Schedule second message (₹5) with random delay (1-2 minutes)
+        // Schedule second message (₹5)
         sendSecondMessage(userId, runTime);
         
         // 1 second gap
@@ -134,9 +142,9 @@ async function startConversation() {
       }
     }
 
-    console.log(`✅ 3 messages (₹0.1) sent this minute. Second messages (₹5) will come randomly in 1-2 minutes`);
+    console.log(`✅ 3 messages (₹0.1) sent`);
 
-  }, 60000); // 🔥 Har 1 Minute
+  }, 60000);
 }
 
 // ===== COMMANDS =====
@@ -158,7 +166,7 @@ bot.onText(/\/test/, async (msg) => {
   running = true;
   messageCount = 0;
   startConversation();
-  bot.sendMessage(chatId, "✅ Started! 3x ₹0.1 per minute + Random ₹5 messages (1-2 min delay)");
+  bot.sendMessage(chatId, "✅ Started! User ID format fixed + Indian Time");
 });
 
 bot.onText(/\/stop/, (msg) => {
@@ -179,9 +187,11 @@ bot.onText(/\/status/, (msg) => {
 📊 Status:
 Running: ${running ? "✅ Yes" : "❌ No"}
 Total Messages: ${messageCount}
-Speed: 3x ₹0.1/min + Random ₹5 (1-2 min delay)
+Users: ${Object.keys(userLastUsed).length}
+Time: ${getIndianTime()}
   `);
 });
 
 console.log("🤖 Bot Started...");
-console.log("📢 3x ₹0.1 per minute + Random ₹5 messages (1-2 min delay)");
+console.log(`📢 Channel ID: ${CHANNEL_ID}`);
+console.log(`🕐 Indian Time: ${getIndianTime()}`);
