@@ -105,9 +105,9 @@ function formatTime(date) {
 // ✅ SAB BOLD Message Format
 function buildMessage(userId, amount, runTime, trackTime) {
   return (
-`*Test Conversation Count 💝*
+`*Conversation Count 💝*
 
-*🎁 Offer Name - Test*
+*🎁 Offer Name - PolicyBazar*
 
 *User Id : ${userId}*
 *User Amount : ₹${amount}*
